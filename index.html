@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilateral Celebration with Icons</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            font-size: 2.5rem;
+        }
+
+        .celebration-btn {
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            border: none;
+            padding: 18px 45px;
+            font-size: 1.5rem;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            outline: none;
+        }
+
+        .celebration-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .celebration-btn:active {
+            transform: translateY(0);
+        }
+
+        .celebration-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .celebration-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Celebration message */
+        .celebration-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 4rem;
+            font-weight: bold;
+            color: gold;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            z-index: 100;
+            pointer-events: none;
+            transition: transform 0.5s ease;
+        }
+
+        .celebration-message.active {
+            transform: translate(-50%, -50%) scale(1);
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.1);
+                text-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 40px rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        /* Confetti containers */
+        #confetti-left, #confetti-right {
+            position: fixed;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        #confetti-left {
+            left: 0;
+        }
+
+        #confetti-right {
+            right: 0;
+        }
+
+        /* Confetti pieces */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0.8;
+            border-radius: 0;
+        }
+
+        .confetti:nth-child(5n) {
+            background-color: #ff0;
+        }
+
+        .confetti:nth-child(5n+1) {
+            background-color: #0f0;
+        }
+
+        .confetti:nth-child(5n+2) {
+            background-color: #00f;
+        }
+
+        .confetti:nth-child(5n+3) {
+            background-color: #f0f;
+        }
+
+        /* Fireworks */
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px;
+            z-index: 2;
+        }
+
+        /* Streamers */
+        .streamer {
+            position: absolute;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, gold, transparent);
+            box-shadow: 0 0 10px gold;
+            z-index: 3;
+        }
+
+        /* Celebration icons */
+        .celebration-icon {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            z-index: 5;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .celebration-icon.left {
+            left: -100px;
+        }
+
+        .celebration-icon.right {
+            right: -100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Click for Bilateral Celebration!</h1>
+        <button class="celebration-btn" id="celebrateBtn">Celebrate!</button>
+    </div>
+    
+    <div class="celebration-message" id="celebrationMessage">Congratulations!</div>
+    <div id="confetti-left"></div>
+    <div id="confetti-right"></div>
+
+    <!-- Celebration icons -->
+    <img src="https://static.vecteezy.com/system/resources/previews/017/193/904/non_2x/hand-drawn-doodle-shape-of-celebration-icon-free-png.png" class="celebration-icon left" id="iconLeft">
+    <img src="https://cdn-icons-png.flaticon.com/512/9987/9987948.png" class="celebration-icon right" id="iconRight">
+
+    <script>
+        const celebrateBtn = document.getElementById('celebrateBtn');
+        const celebrationMessage = document.getElementById('celebrationMessage');
+        const confettiLeft = document.getElementById('confetti-left');
+        const confettiRight = document.getElementById('confetti-right');
+        const iconLeft = document.getElementById('iconLeft');
+        const iconRight = document.getElementById('iconRight');
+
+        celebrateBtn.addEventListener('click', function() {
+            // Show celebration message
+            celebrationMessage.classList.add('active');
+            
+            // Create bilateral celebration effects
+            createBilateralConfetti();
+            createFireworks();
+            createStreamers();
+            animateIcons();
+            
+            // Play celebration sound
+            playHandclaps();
+            
+            // Reset after 4 seconds
+            setTimeout(() => {
+                celebrationMessage.classList.remove('active');
+            }, 4000);
+        });
+
+        function createBilateralConfetti() {
+            // Clear previous confetti
+            confettiLeft.innerHTML = '';
+            confettiRight.innerHTML = '';
+            
+            // Create confetti from left side
+            for (let i = 0; i < 75; i++) {
+                createConfettiPiece(confettiLeft, 'left');
+            }
+            
+            // Create confetti from right side
+            for (let i = 0; i < 75; i++) {
+                createConfettiPiece(confettiRight, 'right');
+            }
+            
+            // Add CSS for falling animation
+            if (!document.getElementById('confetti-animation')) {
+                const style = document.createElement('style');
+                style.id = 'confetti-animation';
+                style.textContent = `
+                    @keyframes fall-left {
+                        0% {
+                            transform: translate(0, 0) rotate(0deg);
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translate(50vw, 100vh) rotate(360deg);
+                            opacity: 0;
+                        }
+                    }
+                    
+                    @keyframes fall-right {
+                        0% {
+                            transform: translate(0, 0) rotate(0deg);
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translate(-50vw, 100vh) rotate(-360deg);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        function createConfettiPiece(container, side) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            
+            // Random position along the side
+            const startY = Math.random() * 100;
+            confetti.style.top = `${startY}%`;
+            
+            if (side === 'left') {
+                confetti.style.left = '0';
+            } else {
+                confetti.style.right = '0';
+            }
+            
+            // Random size
+            const size = Math.random() * 10 + 5;
+            confetti.style.width = `${size}px`;
+            confetti.style.height = `${size}px`;
+            
+            // Random color
+            const hue = Math.floor(Math.random() * 360);
+            confetti.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+            
+            // Random rotation
+            const rotation = Math.random() * 360;
+            confetti.style.transform = `rotate(${rotation}deg)`;
+            
+            // Random animation
+            const animationDuration = Math.random() * 3 + 2;
+            const animationDelay = Math.random() * 2;
+            
+            if (side === 'left') {
+                confetti.style.animation = `fall-left ${animationDuration}s ease-in ${animationDelay}s forwards`;
+            } else {
+                confetti.style.animation = `fall-right ${animationDuration}s ease-in ${animationDelay}s forwards`;
+            }
+            
+            // Add to container
+            container.appendChild(confetti);
+            
+            // Remove confetti after animation
+            setTimeout(() => {
+                if (confetti.parentNode) {
+                    confetti.remove();
+                }
+            }, (animationDuration + animationDelay) * 1000);
+        }
+
+        function createFireworks() {
+            // Create fireworks from both sides
+            for (let i = 0; i < 10; i++) {
+                createFirework('left');
+                createFirework('right');
+            }
+        }
+
+        function createFirework(side) {
+            const firework = document.createElement('div');
+            firework.classList.add('firework');
+            
+            // Position based on side
+            const topPosition = Math.random() * 70 + 10; // 10% to 80% from top
+            firework.style.top = `${topPosition}%`;
+            
+            if (side === 'left') {
+                firework.style.left = `${Math.random() * 30}%`; // 0% to 30% from left
+            } else {
+                firework.style.right = `${Math.random() * 30}%`; // 0% to 30% from right
+            }
+            
+            // Random color
+            const hue = Math.floor(Math.random() * 360);
+            firework.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+            firework.style.boxShadow = `0 0 10px 2px hsl(${hue}, 100%, 50%)`;
+            
+            // Add to body
+            document.body.appendChild(firework);
+            
+            // Animate firework
+            const scale = Math.random() * 2 + 1;
+            const opacity = Math.random() * 0.7 + 0.3;
+            
+            firework.animate([
+                { transform: 'scale(0)', opacity: 0 },
+                { transform: `scale(${scale})`, opacity: opacity },
+                { transform: 'scale(0)', opacity: 0 }
+            ], {
+                duration: Math.random() * 1000 + 1000,
+                easing: 'cubic-bezier(0.215, 0.610, 0.355, 1)'
+            });
+            
+            // Remove after animation
+            setTimeout(() => {
+                if (firework.parentNode) {
+                    firework.remove();
+                }
+            }, 2000);
+        }
+
+        function createStreamers() {
+            // Create streamers from both sides
+            for (let i = 0; i < 8; i++) {
+                createStreamer('left');
+                createStreamer('right');
+            }
+        }
+
+        function createStreamer(side) {
+            const streamer = document.createElement('div');
+            streamer.classList.add('streamer');
+            
+            // Random width and position
+            const width = Math.random() * 200 + 100;
+            streamer.style.width = `${width}px`;
+            
+            const topPosition = Math.random() * 80 + 10; // 10% to 90% from top
+            streamer.style.top = `${topPosition}%`;
+            
+            if (side === 'left') {
+                streamer.style.left = '0';
+                streamer.style.transform = 'rotate(45deg)';
+                streamer.style.transformOrigin = 'top left';
+            } else {
+                streamer.style.right = '0';
+                streamer.style.transform = 'rotate(-45deg)';
+                streamer.style.transformOrigin = 'top right';
+            }
+            
+            // Add to body
+            document.body.appendChild(streamer);
+            
+            // Animate streamer
+            streamer.animate([
+                { transform: side === 'left' ? 'rotate(45deg) scaleX(0)' : 'rotate(-45deg) scaleX(0)', opacity: 0 },
+                { transform: side === 'left' ? 'rotate(45deg) scaleX(1)' : 'rotate(-45deg) scaleX(1)', opacity: 1 },
+                { transform: side === 'left' ? 'rotate(45deg) scaleX(0)' : 'rotate(-45deg) scaleX(0)', opacity: 0 }
+            ], {
+                duration: 1500,
+                easing: 'ease-out'
+            });
+            
+            // Remove after animation
+            setTimeout(() => {
+                if (streamer.parentNode) {
+                    streamer.remove();
+                }
+            }, 1500);
+        }
+
+        function animateIcons() {
+            // Reset icon positions
+            iconLeft.style.opacity = '0';
+            iconRight.style.opacity = '0';
+            iconLeft.style.left = '-100px';
+            iconRight.style.right = '-100px';
+            
+            // Random vertical positions
+            const leftTop = Math.random() * 60 + 20; // 20% to 80%
+            const rightTop = Math.random() * 60 + 20; // 20% to 80%
+            
+            iconLeft.style.top = `${leftTop}%`;
+            iconRight.style.top = `${rightTop}%`;
+            
+            // Animate left icon
+            iconLeft.animate([
+                { left: '-100px', opacity: 0, transform: 'scale(0.5) rotate(-30deg)' },
+                { left: '50px', opacity: 1, transform: 'scale(1.2) rotate(10deg)' },
+                { left: '30px', opacity: 1, transform: 'scale(1) rotate(0deg)' }
+            ], {
+                duration: 800,
+                easing: 'ease-out',
+                fill: 'forwards'
+            });
+            
+            // Animate right icon
+            iconRight.animate([
+                { right: '-100px', opacity: 0, transform: 'scale(0.5) rotate(30deg)' },
+                { right: '50px', opacity: 1, transform: 'scale(1.2) rotate(-10deg)' },
+                { right: '30px', opacity: 1, transform: 'scale(1) rotate(0deg)' }
+            ], {
+                duration: 800,
+                easing: 'ease-out',
+                fill: 'forwards'
+            });
+            
+            // Make icons bounce slightly
+            setTimeout(() => {
+                iconLeft.animate([
+                    { transform: 'scale(1) rotate(0deg)' },
+                    { transform: 'scale(1.1) rotate(-5deg)' },
+                    { transform: 'scale(1) rotate(0deg)' }
+                ], {
+                    duration: 500,
+                    iterations: 3
+                });
+                
+                iconRight.animate([
+                    { transform: 'scale(1) rotate(0deg)' },
+                    { transform: 'scale(1.1) rotate(5deg)' },
+                    { transform: 'scale(1) rotate(0deg)' }
+                ], {
+                    duration: 500,
+                    iterations: 3
+                });
+            }, 800);
+            
+            // Fade out icons
+            setTimeout(() => {
+                iconLeft.animate([
+                    { opacity: 1 },
+                    { opacity: 0 }
+                ], {
+                    duration: 500,
+                    fill: 'forwards'
+                });
+                
+                iconRight.animate([
+                    { opacity: 1 },
+                    { opacity: 0 }
+                ], {
+                    duration: 500,
+                    fill: 'forwards'
+                });
+            }, 2500);
+        }
+
+        function playHandclaps() {
+            // Create handclap sounds using the Web Audio API
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create multiple handclap sounds
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        createHandclap(audioContext, i * 200); // Stagger the claps
+                    }, i * 200);
+                }
+            } catch (e) {
+                console.log("Web Audio API not supported");
+            }
+        }
+
+        function createHandclap(audioContext, delay) {
+            // Create noise buffer for handclap sound
+            const bufferSize = audioContext.sampleRate * 0.1; // 0.1 seconds
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const output = buffer.getChannelData(0);
+            
+            // Fill buffer with noise
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+            
+            // Create source and filter
+            const source = audioContext.createBufferSource();
+            const filter = audioContext.createBiquadFilter();
+            const gainNode = audioContext.createGain();
+            
+            source.buffer = buffer;
+            filter.type = 'bandpass';
+            filter.frequency.value = 1000 + Math.random() * 1000;
+            filter.Q.value = 1.0;
+            
+            source.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Set volume envelope
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            // Play the sound
+            source.start(audioContext.currentTime + delay / 1000);
+        }
+    </script>
+</body>
+</html>
